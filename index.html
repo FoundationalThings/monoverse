@@ -1,0 +1,1134 @@
+/* ============================================================ Monoverse (POC)
+--------------------- > Donna J. Harris (Foundational Things)
+--------------------- Initial "vibe coding" for Monoverse (working title) with
+the kind assistance of Claude Sonnet 4.6
+============================================================ */
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#F5EFE0" />
+    <title>MonoVerse</title>
+    <style>
+      /* ============================================================
+   TOKENS
+   ============================================================ */
+      :root {
+        --cream: #f5efe0;
+        --cream-deep: #ede5ce;
+        --ink: #1a2b3c;
+        --ink-mid: #2e4459;
+        --ink-soft: #5c7a93;
+        --ink-ghost: #a8bcc9;
+        --rule: #d8cebc;
+        --error: #8b3a3a;
+
+        --font-serif: Georgia, 'Times New Roman', Times, serif;
+
+        --stage-w: 82vw;
+        --stage-h: 68vh;
+        --pad-stage: clamp(24px, 4vw, 56px);
+
+        --nav-h: 52px;
+        --arrow-zone: 9vw;
+
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+        --fade-ms: 220;
+      }
+
+      /* ============================================================
+   RESET
+   ============================================================ */
+      *,
+      *::before,
+      *::after {
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        background: var(--cream);
+        color: var(--ink);
+        font-family: var(--font-serif);
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ============================================================
+   APP SHELL
+   ============================================================ */
+      #app {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        position: relative;
+      }
+
+      /* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+      #loading {
+        position: fixed;
+        inset: 0;
+        background: var(--cream);
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        z-index: 200;
+        gap: 20px;
+        -webkit-transition: opacity 0.4s var(--ease);
+        transition: opacity 0.4s var(--ease);
+      }
+
+      #loading.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .loading-wordmark {
+        font-family: var(--font-serif);
+        font-size: clamp(22px, 4vw, 36px);
+        font-style: italic;
+        letter-spacing: 0.12em;
+        color: var(--ink-mid);
+      }
+
+      .loading-sub {
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        color: var(--ink-ghost);
+        text-transform: uppercase;
+      }
+
+      .loading-dot {
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--ink-ghost);
+        -webkit-animation: pulse 1.4s ease-in-out infinite;
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+      .loading-dot:nth-child(2) {
+        -webkit-animation-delay: 0.2s;
+        animation-delay: 0.2s;
+      }
+      .loading-dot:nth-child(3) {
+        -webkit-animation-delay: 0.4s;
+        animation-delay: 0.4s;
+      }
+
+      @-webkit-keyframes pulse {
+        0%,
+        80%,
+        100% {
+          opacity: 0.2;
+          -webkit-transform: scale(0.8);
+          transform: scale(0.8);
+        }
+        40% {
+          opacity: 1;
+          -webkit-transform: scale(1.2);
+          transform: scale(1.2);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        80%,
+        100% {
+          opacity: 0.2;
+          transform: scale(0.8);
+        }
+        40% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+
+      /* ============================================================
+   NAV BAR
+   ============================================================ */
+      #nav-bar {
+        -webkit-flex-shrink: 0;
+        -ms-flex-negative: 0;
+        flex-shrink: 0;
+        height: var(--nav-h);
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        padding: 0 20px;
+        border-bottom: 1px solid var(--rule);
+        background: var(--cream);
+        position: relative;
+        z-index: 10;
+        gap: 2px;
+      }
+
+      /* Wordmark — left side */
+      .nav-wordmark {
+        position: absolute;
+        left: 16px;
+        font-style: italic;
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        color: var(--ink-ghost);
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      /* Reference selects */
+      .ref-group {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        gap: 0;
+      }
+
+      .ref-sep {
+        font-size: 14px;
+        color: var(--rule);
+        padding: 0 3px;
+        line-height: 1;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-family: var(--font-serif);
+        font-size: 13px;
+        letter-spacing: 0.05em;
+        color: var(--ink-mid);
+        cursor: pointer;
+        padding: 6px 22px 6px 8px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5' viewBox='0 0 9 5'%3E%3Cpath d='M1 1l3.5 3L8 1' stroke='%23A8BCC9' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 6px center;
+        max-width: 180px;
+        -webkit-transition: color 0.15s;
+        transition: color 0.15s;
+      }
+
+      select:focus {
+        color: var(--ink);
+      }
+      select::-ms-expand {
+        display: none;
+      }
+
+      /* ============================================================
+   MAIN STAGE
+   ============================================================ */
+      #stage-wrap {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* The constrained content box */
+      #stage {
+        width: var(--stage-w);
+        height: var(--stage-h);
+        padding: var(--pad-stage);
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      /* Subtle parchment border */
+      #stage::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border: 1px solid var(--rule);
+        border-radius: 2px;
+        pointer-events: none;
+        opacity: 0.6;
+      }
+
+      /* Verse text — sized by JS */
+      #verse-text {
+        font-style: italic;
+        line-height: 1.8;
+        letter-spacing: 0.025em;
+        color: var(--ink);
+        text-align: center;
+        width: 100%;
+        /* font-size set by JS */
+        -webkit-transition: opacity 0.22s var(--ease);
+        transition: opacity 0.22s var(--ease);
+        word-break: break-word;
+      }
+
+      #verse-text.fading {
+        opacity: 0;
+      }
+
+      /* ============================================================
+   ARROW BUTTONS
+   ============================================================ */
+      .arrow-btn {
+        position: absolute;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+        width: var(--arrow-zone);
+        height: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        color: var(--ink-ghost);
+        font-size: clamp(20px, 3vw, 32px);
+        -webkit-tap-highlight-color: transparent;
+        -webkit-transition:
+          color 0.2s var(--ease),
+          opacity 0.3s var(--ease);
+        transition:
+          color 0.2s var(--ease),
+          opacity 0.3s var(--ease);
+        opacity: 1;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        z-index: 5;
+      }
+
+      .arrow-btn:hover {
+        color: var(--ink-soft);
+      }
+      .arrow-btn:active {
+        color: var(--ink);
+      }
+      .arrow-btn:focus {
+        outline: none;
+      }
+
+      .arrow-btn:disabled {
+        opacity: 0.15;
+        cursor: default;
+      }
+
+      #btn-prev {
+        left: 0;
+      }
+      #btn-next {
+        right: 0;
+      }
+
+      .arrow-inner {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-transition: background 0.15s;
+        transition: background 0.15s;
+      }
+
+      .arrow-btn:hover .arrow-inner {
+        background: var(--cream-deep);
+      }
+
+      /* Idle fade — modern pointer devices only */
+      @media (hover: hover) and (pointer: fine) {
+        #stage-wrap.idle .arrow-btn:not(:disabled) {
+          opacity: 0.12;
+        }
+        #stage-wrap:hover .arrow-btn:not(:disabled),
+        #stage-wrap.active .arrow-btn:not(:disabled) {
+          opacity: 1;
+        }
+      }
+
+      /* ============================================================
+   ERROR STATE
+   ============================================================ */
+      #error-msg {
+        display: none;
+        font-size: 13px;
+        font-style: italic;
+        color: var(--error);
+        letter-spacing: 0.04em;
+        text-align: center;
+        padding: 12px 20px;
+      }
+
+      #error-msg.visible {
+        display: block;
+      }
+
+      /* ============================================================
+   PORTRAIT ADJUSTMENTS
+   ============================================================ */
+      @media (orientation: portrait) {
+        :root {
+          --stage-w: 88vw;
+          --stage-h: 62vh;
+          --arrow-zone: 7vw;
+        }
+
+        .arrow-btn {
+          top: auto;
+          bottom: 0;
+          -webkit-transform: none;
+          -ms-transform: none;
+          transform: none;
+          width: 56px;
+          height: 64px;
+        }
+
+        #btn-prev {
+          left: 20px;
+        }
+        #btn-next {
+          right: 20px;
+        }
+      }
+
+      /* ============================================================
+   SMALL PORTRAIT (phone)
+   ============================================================ */
+      @media (orientation: portrait) and (max-width: 480px) {
+        :root {
+          --stage-w: 92vw;
+          --stage-h: 58vh;
+          --pad-stage: 20px;
+        }
+
+        select {
+          font-size: 12px;
+          max-width: 130px;
+        }
+        .nav-wordmark {
+          display: none;
+        }
+      }
+
+      /* ============================================================
+   LARGE LANDSCAPE (desktop)
+   ============================================================ */
+      @media (orientation: landscape) and (min-width: 1200px) {
+        :root {
+          --stage-w: 70vw;
+          --stage-h: 72vh;
+          --pad-stage: 64px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============================================================
+     LOADING
+     ============================================================ -->
+    <div id="loading">
+      <div class="loading-wordmark">MonoVerse</div>
+      <div style="display: flex; gap: 6px; margin-top: 4px">
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+      </div>
+      <div class="loading-sub">Opening the Word</div>
+    </div>
+
+    <!-- ============================================================
+     APP
+     ============================================================ -->
+    <div id="app">
+      <!-- Nav -->
+      <div id="nav-bar">
+        <span class="nav-wordmark">MonoVerse</span>
+        <div class="ref-group">
+          <select id="sel-book" aria-label="Book"></select>
+          <span class="ref-sep">&#xb7;</span>
+          <select id="sel-chapter" aria-label="Chapter"></select>
+          <span class="ref-sep">&#xb7;</span>
+          <select id="sel-verse" aria-label="Verse"></select>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="error-msg" role="alert"></div>
+
+      <!-- Stage -->
+      <div id="stage-wrap">
+        <button
+          id="btn-prev"
+          class="arrow-btn"
+          aria-label="Previous verse"
+          disabled
+        >
+          <span class="arrow-inner">&#8249;</span>
+        </button>
+
+        <div id="stage">
+          <p id="verse-text" lang="en"></p>
+        </div>
+
+        <button
+          id="btn-next"
+          class="arrow-btn"
+          aria-label="Next verse"
+          disabled
+        >
+          <span class="arrow-inner">&#8250;</span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      /* ============================================================
+   MonoVerse — v2
+   Legacy-first: ES5, XHR, no dependencies
+   ============================================================ */
+      (function () {
+        'use strict';
+
+        /* ----------------------------------------------------------
+     CONFIG
+  ---------------------------------------------------------- */
+        var API_BASE = 'https://bible.helloao.org/api';
+        var TRANSLATION = 'BSB';
+        var FADE_MS = 220;
+
+        /* Font size search bounds (px) */
+        var FONT_MIN = 13;
+        var FONT_MAX = 96;
+
+        /* ----------------------------------------------------------
+     STATE
+  ---------------------------------------------------------- */
+        var books = []; // [{id, name, chapters:[{number, apiLink}]}]
+        var chapterCache = {}; // key: "BOOKID-N" → array of verse strings
+        var flatList = []; // [{bookIdx, chapterIdx, verseNum, text}]
+        var booksLoaded = false;
+
+        var currentFlat = 0;
+        var idleTimer = null;
+        var resizeTimer = null;
+
+        /* ----------------------------------------------------------
+     DOM
+  ---------------------------------------------------------- */
+        var elLoading = document.getElementById('loading');
+        var elApp = document.getElementById('app');
+        var elError = document.getElementById('error-msg');
+        var elStageWrap = document.getElementById('stage-wrap');
+        var elStage = document.getElementById('stage');
+        var elVerse = document.getElementById('verse-text');
+        var elBtnPrev = document.getElementById('btn-prev');
+        var elBtnNext = document.getElementById('btn-next');
+        var selBook = document.getElementById('sel-book');
+        var selChapter = document.getElementById('sel-chapter');
+        var selVerse = document.getElementById('sel-verse');
+
+        /* ----------------------------------------------------------
+     XHR HELPER
+  ---------------------------------------------------------- */
+        function xhr(url, onSuccess, onError) {
+          var req = new XMLHttpRequest();
+          req.open('GET', url, true);
+          req.onreadystatechange = function () {
+            if (req.readyState !== 4) return;
+            if (req.status >= 200 && req.status < 300) {
+              try {
+                onSuccess(JSON.parse(req.responseText));
+              } catch (e) {
+                onError('Could not parse response.');
+              }
+            } else {
+              onError('Network error (' + req.status + ').');
+            }
+          };
+          req.onerror = function () {
+            onError('Connection failed.');
+          };
+          req.send();
+        }
+
+        /* ----------------------------------------------------------
+     ERROR DISPLAY
+  ---------------------------------------------------------- */
+        function showError(msg) {
+          elError.textContent =
+            msg + ' Please check your connection and try again.';
+          elError.className = 'visible';
+        }
+
+        function clearError() {
+          elError.className = '';
+          elError.textContent = '';
+        }
+
+        /* ----------------------------------------------------------
+     EXTRACT VERSE TEXT FROM HELLOAO CONTENT ARRAY
+     Each verse content item is either a string or an object:
+     {text, poem, noteId, lineBreak, ...}
+  ---------------------------------------------------------- */
+        function extractVerseText(contentArr) {
+          var out = '';
+          for (var i = 0; i < contentArr.length; i++) {
+            var item = contentArr[i];
+            if (typeof item === 'string') {
+              out += ' ' + item;
+            } else if (item && typeof item === 'object') {
+              if (item.lineBreak) {
+                out += ' ';
+              } else if (item.text) {
+                out += ' ' + item.text;
+              }
+              // noteId references (footnotes) are intentionally skipped for now
+            }
+          }
+          return out.replace(/\s+/g, ' ').trim();
+        }
+
+        /* ----------------------------------------------------------
+     LOAD BOOKS LIST
+  ---------------------------------------------------------- */
+        function loadBooks(callback) {
+          var url = API_BASE + '/' + TRANSLATION + '/books.json';
+          xhr(
+            url,
+            function (data) {
+              books = [];
+              var rawBooks = data.books || [];
+              for (var b = 0; b < rawBooks.length; b++) {
+                var rb = rawBooks[b];
+                var chapterList = [];
+                /* API gives us firstChapterNumber and lastChapterNumber —
+           build the chapter list from that range */
+                var first = rb.firstChapterNumber || 1;
+                var last = rb.lastChapterNumber || rb.numberOfChapters || 1;
+                for (var n = first; n <= last; n++) {
+                  chapterList.push({
+                    number: n,
+                    apiLink:
+                      '/api/' + TRANSLATION + '/' + rb.id + '/' + n + '.json',
+                  });
+                }
+                books.push({
+                  id: rb.id,
+                  name: rb.name || rb.commonName,
+                  chapters: chapterList,
+                });
+              }
+              booksLoaded = true;
+              callback(null);
+            },
+            function (err) {
+              callback(err);
+            },
+          );
+        }
+
+        /* ----------------------------------------------------------
+     LOAD CHAPTER (with cache)
+  ---------------------------------------------------------- */
+        function loadChapter(bookIdx, chapterIdx, callback) {
+          var book = books[bookIdx];
+          var chapterObj = book.chapters[chapterIdx];
+          var cacheKey = book.id + '-' + chapterObj.number;
+
+          if (chapterCache[cacheKey]) {
+            callback(null, chapterCache[cacheKey]);
+            return;
+          }
+
+          /* apiLink is like "/api/BSB/GEN/1.json" */
+          var url = 'https://bible.helloao.org' + chapterObj.apiLink;
+
+          xhr(
+            url,
+            function (data) {
+              var verses = [];
+
+              /* Log the raw response shape once per session for debugging */
+              if (!window._mvDebugLogged) {
+                window._mvDebugLogged = true;
+                console.log(
+                  '[MonoVerse] Chapter API response shape:',
+                  JSON.stringify(Object.keys(data)),
+                );
+                if (data.chapter)
+                  console.log(
+                    '[MonoVerse] data.chapter keys:',
+                    JSON.stringify(Object.keys(data.chapter)),
+                  );
+              }
+
+              /* The chapter content lives at data.chapter.content
+         Each item can be: heading, verse, line break, etc.
+         We only care about items with type === "verse" */
+              var rawContent = [];
+              if (data.chapter && Array.isArray(data.chapter.content)) {
+                rawContent = data.chapter.content;
+              } else if (Array.isArray(data.content)) {
+                /* Fallback in case structure differs */
+                rawContent = data.content;
+              }
+
+              for (var i = 0; i < rawContent.length; i++) {
+                var item = rawContent[i];
+                if (!item) continue;
+                if (item.type === 'verse' && item.content) {
+                  var text = extractVerseText(item.content);
+                  if (text) {
+                    verses.push({
+                      number: item.number || verses.length + 1,
+                      text: text,
+                    });
+                  }
+                }
+              }
+
+              if (verses.length === 0) {
+                console.warn(
+                  '[MonoVerse] No verses parsed from chapter. Raw data:',
+                  data,
+                );
+              }
+
+              chapterCache[cacheKey] = verses;
+              callback(null, verses);
+            },
+            function (err) {
+              callback(err, null);
+            },
+          );
+        }
+
+        /* ----------------------------------------------------------
+     POPULATE DROPDOWNS
+  ---------------------------------------------------------- */
+        function populateBooks() {
+          selBook.innerHTML = '';
+          for (var i = 0; i < books.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = i;
+            opt.text = books[i].name;
+            selBook.appendChild(opt);
+          }
+        }
+
+        function populateChapters(bookIdx) {
+          selChapter.innerHTML = '';
+          var chapters = books[bookIdx].chapters;
+          for (var i = 0; i < chapters.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = i;
+            opt.text = chapters[i].number;
+            selChapter.appendChild(opt);
+          }
+        }
+
+        function populateVerses(verses) {
+          selVerse.innerHTML = '';
+          for (var i = 0; i < verses.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = i;
+            opt.text = verses[i].number;
+            selVerse.appendChild(opt);
+          }
+        }
+
+        /* ----------------------------------------------------------
+     BINARY SEARCH FONT SIZE
+     Finds the largest font size (px) where text fits the stage.
+  ---------------------------------------------------------- */
+        function fitTextToStage() {
+          var stageW = elStage.clientWidth - 2; /* fudge for sub-px */
+          var stageH = elStage.clientHeight - 2;
+
+          /* Padding is already applied via CSS, so we measure
+       the inner available area via the stage itself */
+
+          var lo = FONT_MIN;
+          var hi = FONT_MAX;
+          var best = FONT_MIN;
+
+          /* Max ~7 iterations for this range */
+          while (lo <= hi) {
+            var mid = Math.floor((lo + hi) / 2);
+            elVerse.style.fontSize = mid + 'px';
+
+            if (
+              elVerse.scrollWidth <= stageW &&
+              elVerse.scrollHeight <= stageH
+            ) {
+              best = mid;
+              lo = mid + 1;
+            } else {
+              hi = mid - 1;
+            }
+          }
+
+          elVerse.style.fontSize = best + 'px';
+        }
+
+        /* ----------------------------------------------------------
+     RENDER VERSE
+  ---------------------------------------------------------- */
+        function renderVerse(text, animate) {
+          function doRender() {
+            elVerse.textContent = text;
+            fitTextToStage();
+            if (animate) {
+              /* force reflow */
+              void elVerse.offsetHeight;
+              elVerse.classList.remove('fading');
+            }
+          }
+
+          if (animate) {
+            elVerse.classList.add('fading');
+            setTimeout(doRender, FADE_MS);
+          } else {
+            doRender();
+          }
+        }
+
+        /* ----------------------------------------------------------
+     NAVIGATE TO A VERSE
+  ---------------------------------------------------------- */
+        function goToVerse(bookIdx, chapterIdx, verseIdx, animate) {
+          clearError();
+
+          /* Show loading hint for slow fetches */
+          var slowTimer = setTimeout(function () {
+            if (
+              !chapterCache[
+                books[bookIdx].id +
+                  '-' +
+                  books[bookIdx].chapters[chapterIdx].number
+              ]
+            ) {
+              elVerse.classList.add('fading');
+            }
+          }, 400);
+
+          loadChapter(bookIdx, chapterIdx, function (err, verses) {
+            clearTimeout(slowTimer);
+            if (err) {
+              showError('Could not load this chapter.');
+              elVerse.classList.remove('fading');
+              return;
+            }
+
+            /* Clamp verseIdx in case chapter has fewer verses */
+            verseIdx = Math.max(0, Math.min(verseIdx, verses.length - 1));
+
+            var text = verses[verseIdx] ? verses[verseIdx].text : '';
+            renderVerse(text, animate);
+
+            /* Sync dropdowns */
+            selBook.value = bookIdx;
+            populateChapters(bookIdx);
+            selChapter.value = chapterIdx;
+            populateVerses(verses);
+            selVerse.value = verseIdx;
+
+            /* Update button states */
+            var isFirst = bookIdx === 0 && chapterIdx === 0 && verseIdx === 0;
+            var lastBook = books.length - 1;
+            var lastChap = books[lastBook].chapters.length - 1;
+            /* We can't know the last verse count of the last chapter without loading it,
+         so we disable next only when we know we're at the end */
+            elBtnPrev.disabled = isFirst;
+            elBtnNext.disabled = false; /* will disable naturally at true end */
+
+            /* Persist position */
+            currentPos = {
+              bookIdx: bookIdx,
+              chapterIdx: chapterIdx,
+              verseIdx: verseIdx,
+              verses: verses,
+            };
+
+            resetIdle();
+          });
+        }
+
+        /* Current position object */
+        var currentPos = null;
+
+        /* ----------------------------------------------------------
+     SEQUENTIAL NAVIGATION
+  ---------------------------------------------------------- */
+        function stepVerse(delta) {
+          if (!currentPos) return;
+
+          var bookIdx = currentPos.bookIdx;
+          var chapterIdx = currentPos.chapterIdx;
+          var verseIdx = currentPos.verseIdx;
+          var verses = currentPos.verses;
+
+          var newBook = bookIdx;
+          var newChapter = chapterIdx;
+          var newVerse = verseIdx + delta;
+
+          if (delta > 0) {
+            /* Forward */
+            if (newVerse >= verses.length) {
+              /* Next chapter */
+              newVerse = 0;
+              newChapter = chapterIdx + 1;
+              if (newChapter >= books[bookIdx].chapters.length) {
+                /* Next book */
+                newChapter = 0;
+                newBook = bookIdx + 1;
+                if (newBook >= books.length) {
+                  /* End of Bible */
+                  elBtnNext.disabled = true;
+                  return;
+                }
+              }
+            }
+          } else {
+            /* Backward */
+            if (newVerse < 0) {
+              /* Previous chapter */
+              newChapter = chapterIdx - 1;
+              if (newChapter < 0) {
+                /* Previous book */
+                newBook = bookIdx - 1;
+                if (newBook < 0) {
+                  elBtnPrev.disabled = true;
+                  return;
+                }
+                newChapter = books[newBook].chapters.length - 1;
+              }
+              /* Load previous chapter to get its verse count */
+              loadChapter(newBook, newChapter, function (err, prevVerses) {
+                if (err) {
+                  showError('Could not load chapter.');
+                  return;
+                }
+                goToVerse(newBook, newChapter, prevVerses.length - 1, true);
+              });
+              return;
+            }
+          }
+
+          goToVerse(newBook, newChapter, newVerse, true);
+        }
+
+        /* ----------------------------------------------------------
+     IDLE MANAGEMENT
+  ---------------------------------------------------------- */
+        function resetIdle() {
+          elStageWrap.className = 'active';
+          clearTimeout(idleTimer);
+          idleTimer = setTimeout(function () {
+            elStageWrap.className = 'idle';
+          }, 2800);
+        }
+
+        /* ----------------------------------------------------------
+     SWIPE
+  ---------------------------------------------------------- */
+        var touchStartX = 0;
+        var touchStartY = 0;
+
+        elStageWrap.addEventListener(
+          'touchstart',
+          function (e) {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+            resetIdle();
+          },
+          false,
+        );
+
+        elStageWrap.addEventListener(
+          'touchend',
+          function (e) {
+            var dx = e.changedTouches[0].screenX - touchStartX;
+            var dy = e.changedTouches[0].screenY - touchStartY;
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 44) {
+              if (dx < 0) stepVerse(1);
+              else stepVerse(-1);
+            }
+          },
+          false,
+        );
+
+        elStageWrap.addEventListener('mousemove', resetIdle, false);
+
+        /* ----------------------------------------------------------
+     KEYBOARD
+  ---------------------------------------------------------- */
+        document.addEventListener(
+          'keydown',
+          function (e) {
+            var k = e.keyCode || e.which;
+            if (k === 37) stepVerse(-1);
+            if (k === 39) stepVerse(1);
+          },
+          false,
+        );
+
+        /* ----------------------------------------------------------
+     BUTTON EVENTS
+  ---------------------------------------------------------- */
+        elBtnPrev.onclick = function () {
+          stepVerse(-1);
+        };
+        elBtnNext.onclick = function () {
+          stepVerse(1);
+        };
+
+        /* ----------------------------------------------------------
+     DROPDOWN EVENTS
+  ---------------------------------------------------------- */
+        selBook.onchange = function () {
+          var bookIdx = parseInt(selBook.value, 10);
+          goToVerse(bookIdx, 0, 0, true);
+        };
+
+        selChapter.onchange = function () {
+          var bookIdx = parseInt(selBook.value, 10);
+          var chapterIdx = parseInt(selChapter.value, 10);
+          goToVerse(bookIdx, chapterIdx, 0, true);
+        };
+
+        selVerse.onchange = function () {
+          var bookIdx = parseInt(selBook.value, 10);
+          var chapterIdx = parseInt(selChapter.value, 10);
+          var verseIdx = parseInt(selVerse.value, 10);
+          goToVerse(bookIdx, chapterIdx, verseIdx, true);
+        };
+
+        /* ----------------------------------------------------------
+     RESIZE — refit text
+  ---------------------------------------------------------- */
+        window.onresize = function () {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(function () {
+            if (currentPos) {
+              fitTextToStage();
+            }
+          }, 150);
+        };
+
+        /* ----------------------------------------------------------
+     INIT
+  ---------------------------------------------------------- */
+        function hideLoading() {
+          elLoading.className = 'hidden';
+          setTimeout(function () {
+            elLoading.style.display = 'none';
+          }, 450);
+        }
+
+        function init() {
+          loadBooks(function (err) {
+            if (err) {
+              hideLoading();
+              showError('Could not load Bible data. ' + err);
+              return;
+            }
+
+            populateBooks();
+
+            /* Start at Genesis 1:1 */
+            goToVerse(0, 0, 0, false);
+
+            hideLoading();
+            resetIdle();
+          });
+        }
+
+        /* Small defer so loading screen paints first */
+        setTimeout(init, 80);
+      })();
+    </script>
+  </body>
+</html>
