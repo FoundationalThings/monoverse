@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test 5d</title>
+<style>
+body { background: #F5EFE0; font-family: Georgia, serif; padding: 40px; }
+</style>
+</head>
+<body>
+<h1>Test 5d &mdash; XHR inside a function</h1>
+<div id="out"></div>
+<script>
+var outputEl = document.getElementById('out');
+
+function addResult(msg) {
+  var d = document.createElement('div');
+  d.textContent = msg;
+  outputEl.appendChild(d);
+}
+
+addResult('Script started.');
+
+function doXhr(url, onDone) {
+  addResult('doXhr called.');
+  var req = new XMLHttpRequest();
+  addResult('XHR object created.');
+  req.onload = function() {
+    addResult('onload fired. Status: ' + req.status);
+    onDone(req.responseText);
+  };
+  req.onreadystatechange = function() {
+    if (req.readyState !== 4) return;
+    addResult('onreadystatechange fired. Status: ' + req.status);
+    req.onload();
+  };
+  req.onerror = function() {
+    addResult('onerror fired.');
+  };
+  req.open('GET', url, true);
+  addResult('req.open called.');
+  req.send();
+  addResult('req.send called.');
+}
+
+doXhr('https://bible.helloao.org/api/BSB/books.json', function(text) {
+  addResult('Response length: ' + text.length + ' chars.');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MonoVerse &mdash; Debug Tests</title>
+    <style>
+      body {
+        background: #f5efe0;
+        color: #1a2b3c;
+        font-family: Georgia, serif;
+        margin: 0;
+        padding: 40px;
+      }
+      h1 {
+        font-size: 20px;
+        font-style: italic;
+        margin-bottom: 6px;
+      }
+      p {
+        font-size: 13px;
+        color: #5c7a93;
+        margin-bottom: 32px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        margin-bottom: 12px;
+      }
+      a {
+        display: block;
+        padding: 14px 20px;
+        background: white;
+        border: 1px solid #d8cebc;
+        color: #1a2b3c;
+        text-decoration: none;
+        font-size: 14px;
+      }
+      a:hover {
+        background: #ede5ce;
+      }
+      .num {
+        color: #a8bcc9;
+        margin-right: 8px;
+      }
+      .desc {
+        display: block;
+        font-size: 12px;
+        color: #5c7a93;
+        margin-top: 4px;
+      }
+      .group {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #a8bcc9;
+        margin: 24px 0 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>MonoVerse &mdash; Debug Tests</h1>
+    <p>Run in order. Each adds one layer. Find where it breaks.</p>
+
+    <div class="group">Test 5 - Isolating the problem</div>
+    <ul>
+      <li>
+        <a href="test5a.html"
+          ><span class="num">5a.</span> Does any JS run?<span class="desc"
+            >Absolute minimum. One line of JS.</span
+          ></a
+        >
+      </li>
+      <li>
+        <a href="test5b.html"
+          ><span class="num">5b.</span> JS + createElement<span class="desc"
+            >Writing elements to the DOM.</span
+          ></a
+        >
+      </li>
+      <li>
+        <a href="test5c.html"
+          ><span class="num">5c.</span> JS + function writing to DOM<span
+            class="desc"
+            >Defining and calling a function.</span
+          ></a
+        >
+      </li>
+      <li>
+        <a href="test5d.html"
+          ><span class="num">5d.</span> XHR inside a function<span class="desc"
+            >Step-by-step XHR with logging at every point.</span
+          ></a
+        >
+      </li>
+      <li>
+        <a href="test5e.html"
+          ><span class="num">5e.</span> XHR + JSON.parse (flat)<span
+            class="desc"
+            >No wrapper functions. Flat script. Books response parsed.</span
+          ></a
+        >
+      </li>
+    </ul>
+  </body>
+</html>
