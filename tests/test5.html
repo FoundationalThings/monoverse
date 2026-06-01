@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MonoVerse Test 5 — Parse Books</title>
-    <!-- <style>
+    <style>
       body {
         background: #f5efe0;
         color: #1a2b3c;
@@ -45,10 +45,10 @@
         font-size: 12px;
         word-break: break-all;
       }
-    </style> -->
+    </style>
   </head>
   <body>
-    <h1>Test 5 — Parse Books Response (v1.946 - styles removed)</h1>
+    <h1>Test 5 — Parse Books Response (v1.954 - stepping through)</h1>
     <p>
       Fetches books.json then runs the exact same parsing logic the app uses.
       Reports each step.
@@ -65,154 +65,154 @@
         return d;
       }
 
-      var pending = addResult('Fetching books.json...', 'pending');
-      var done = false;
-      var req = new XMLHttpRequest();
+      // var pending = addResult('Fetching books.json...', 'pending');
+      // var done = false;
+      // var req = new XMLHttpRequest();
 
-      var timer = setTimeout(function () {
-        if (done) return;
-        done = true;
-        req.abort();
-        pending.className = 'box fail';
-        pending.textContent = '✗ Timed out.';
-      }, 12000);
+      // var timer = setTimeout(function () {
+      //   if (done) return;
+      //   done = true;
+      //   req.abort();
+      //   pending.className = 'box fail';
+      //   pending.textContent = '✗ Timed out.';
+      // }, 12000);
 
-      req.onload = function () {
-        if (done) return;
-        done = true;
-        clearTimeout(timer);
-        pending.className = 'box pass';
-        pending.textContent = '✓ books.json received. Status: ' + req.status;
+      // req.onload = function () {
+      //   if (done) return;
+      //   done = true;
+      //   clearTimeout(timer);
+      //   pending.className = 'box pass';
+      //   pending.textContent = '✓ books.json received. Status: ' + req.status;
 
-        var data;
-        try {
-          data = JSON.parse(req.responseText);
-          addResult('JSON parsed OK', 'pass');
-        } catch (e) {
-          addResult('JSON parse failed: ' + e, 'fail');
-          return;
-        }
+      //   var data;
+      //   try {
+      //     data = JSON.parse(req.responseText);
+      //     addResult('JSON parsed OK', 'pass');
+      //   } catch (e) {
+      //     addResult('JSON parse failed: ' + e, 'fail');
+      //     return;
+      //   }
 
-        /* --- Exact same logic as the app's loadBooks --- */
-        var books = [];
-        var rawBooks = data.books || [];
+      //   /* --- Exact same logic as the app's loadBooks --- */
+      //   var books = [];
+      //   var rawBooks = data.books || [];
 
-        addResult(
-          'rawBooks.length: ' + rawBooks.length,
-          rawBooks.length > 0 ? 'pass' : 'fail',
-        );
+      //   addResult(
+      //     'rawBooks.length: ' + rawBooks.length,
+      //     rawBooks.length > 0 ? 'pass' : 'fail',
+      //   );
 
-        /* Check first book's keys */
-        if (rawBooks.length > 0) {
-          var first = rawBooks[0];
-          addResult(
-            'First book keys: ' + Object.keys(first).join(', '),
-            'info',
-          );
-          addResult('first.id: ' + first.id, first.id ? 'pass' : 'fail');
-          addResult(
-            'first.name or commonName: ' + (first.name || first.commonName),
-            first.name || first.commonName ? 'pass' : 'fail',
-          );
-          addResult(
-            'first.firstChapterNumber: ' + first.firstChapterNumber,
-            'info',
-          );
-          addResult(
-            'first.lastChapterNumber: ' + first.lastChapterNumber,
-            'info',
-          );
-          addResult(
-            'first.numberOfChapters: ' + first.numberOfChapters,
-            'info',
-          );
-        }
+      //   /* Check first book's keys */
+      //   if (rawBooks.length > 0) {
+      //     var first = rawBooks[0];
+      //     addResult(
+      //       'First book keys: ' + Object.keys(first).join(', '),
+      //       'info',
+      //     );
+      //     addResult('first.id: ' + first.id, first.id ? 'pass' : 'fail');
+      //     addResult(
+      //       'first.name or commonName: ' + (first.name || first.commonName),
+      //       first.name || first.commonName ? 'pass' : 'fail',
+      //     );
+      //     addResult(
+      //       'first.firstChapterNumber: ' + first.firstChapterNumber,
+      //       'info',
+      //     );
+      //     addResult(
+      //       'first.lastChapterNumber: ' + first.lastChapterNumber,
+      //       'info',
+      //     );
+      //     addResult(
+      //       'first.numberOfChapters: ' + first.numberOfChapters,
+      //       'info',
+      //     );
+      //   }
 
-        /* Build books array */
-        try {
-          for (var b = 0; b < rawBooks.length; b++) {
-            var rb = rawBooks[b];
-            var chapterList = [];
-            var first2 = rb.firstChapterNumber || 1;
-            var last = rb.lastChapterNumber || rb.numberOfChapters || 1;
-            for (var n = first2; n <= last; n++) {
-              chapterList.push({
-                number: n,
-                apiLink: '/api/BSB/' + rb.id + '/' + n + '.json',
-              });
-            }
-            books.push({
-              id: rb.id,
-              name: rb.name || rb.commonName,
-              chapters: chapterList,
-            });
-          }
-          addResult(
-            'books array built. Length: ' + books.length,
-            books.length === 66 ? 'pass' : 'fail',
-          );
-        } catch (e) {
-          addResult('Error building books array: ' + e, 'fail');
-          return;
-        }
+      //   /* Build books array */
+      //   try {
+      //     for (var b = 0; b < rawBooks.length; b++) {
+      //       var rb = rawBooks[b];
+      //       var chapterList = [];
+      //       var first2 = rb.firstChapterNumber || 1;
+      //       var last = rb.lastChapterNumber || rb.numberOfChapters || 1;
+      //       for (var n = first2; n <= last; n++) {
+      //         chapterList.push({
+      //           number: n,
+      //           apiLink: '/api/BSB/' + rb.id + '/' + n + '.json',
+      //         });
+      //       }
+      //       books.push({
+      //         id: rb.id,
+      //         name: rb.name || rb.commonName,
+      //         chapters: chapterList,
+      //       });
+      //     }
+      //     addResult(
+      //       'books array built. Length: ' + books.length,
+      //       books.length === 66 ? 'pass' : 'fail',
+      //     );
+      //   } catch (e) {
+      //     addResult('Error building books array: ' + e, 'fail');
+      //     return;
+      //   }
 
-        /* Spot check a few */
-        if (books[0]) {
-          addResult(
-            'books[0]: ' +
-              books[0].name +
-              ', chapters: ' +
-              books[0].chapters.length,
-            'pass',
-          );
-          addResult(
-            'books[0] first chapter apiLink: ' + books[0].chapters[0].apiLink,
-            'info',
-          );
-        }
-        if (books[18]) {
-          addResult(
-            'books[18]: ' +
-              books[18].name +
-              ', chapters: ' +
-              books[18].chapters.length,
-            'info',
-          );
-        }
-        if (books[65]) {
-          addResult(
-            'books[65]: ' +
-              books[65].name +
-              ', chapters: ' +
-              books[65].chapters.length,
-            'info',
-          );
-        }
+      //   /* Spot check a few */
+      //   if (books[0]) {
+      //     addResult(
+      //       'books[0]: ' +
+      //         books[0].name +
+      //         ', chapters: ' +
+      //         books[0].chapters.length,
+      //       'pass',
+      //     );
+      //     addResult(
+      //       'books[0] first chapter apiLink: ' + books[0].chapters[0].apiLink,
+      //       'info',
+      //     );
+      //   }
+      //   if (books[18]) {
+      //     addResult(
+      //       'books[18]: ' +
+      //         books[18].name +
+      //         ', chapters: ' +
+      //         books[18].chapters.length,
+      //       'info',
+      //     );
+      //   }
+      //   if (books[65]) {
+      //     addResult(
+      //       'books[65]: ' +
+      //         books[65].name +
+      //         ', chapters: ' +
+      //         books[65].chapters.length,
+      //       'info',
+      //     );
+      //   }
 
-        addResult('— Test 5 complete —', 'pass');
-      };
+      //   addResult('— Test 5 complete —', 'pass');
+      // };
 
-      req.onreadystatechange = function () {
-        if (req.readyState !== 4 || done) return;
-        req.onload();
-      };
-      req.onerror = function () {
-        if (done) return;
-        done = true;
-        clearTimeout(timer);
-        pending.className = 'box fail';
-        pending.textContent = '✗ Network error.';
-      };
+      // req.onreadystatechange = function () {
+      //   if (req.readyState !== 4 || done) return;
+      //   req.onload();
+      // };
+      // req.onerror = function () {
+      //   if (done) return;
+      //   done = true;
+      //   clearTimeout(timer);
+      //   pending.className = 'box fail';
+      //   pending.textContent = '✗ Network error.';
+      // };
 
-      try {
-        req.open('GET', 'https://bible.helloao.org/api/BSB/books.json', true);
-        req.send();
-      } catch (e) {
-        done = true;
-        clearTimeout(timer);
-        pending.className = 'box fail';
-        pending.textContent = '✗ open/send threw: ' + e;
-      }
+      // try {
+      //   req.open('GET', 'https://bible.helloao.org/api/BSB/books.json', true);
+      //   req.send();
+      // } catch (e) {
+      //   done = true;
+      //   clearTimeout(timer);
+      //   pending.className = 'box fail';
+      //   pending.textContent = '✗ open/send threw: ' + e;
+      // }
     </script>
   </body>
 </html>
