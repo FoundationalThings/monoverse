@@ -24,7 +24,7 @@
     <meta name="theme-color" content="#F5EFE0" />
     <title>MonoVerse</title>
     <style>
-      /* ============================================================
+  /* ============================================================
    TOKENS
    ============================================================ */
       :root {
@@ -50,7 +50,7 @@
         --fade-ms: 220;
       }
 
-      /* ============================================================
+  /* ============================================================
    RESET
    ============================================================ */
       *,
@@ -75,7 +75,7 @@
         -webkit-font-smoothing: antialiased;
       }
 
-      /* ============================================================
+  /* ============================================================
    APP SHELL
    ============================================================ */
       #app {
@@ -91,7 +91,7 @@
         position: relative;
       }
 
-      /* ============================================================
+   /* ============================================================
    LOADING SCREEN
    ============================================================ */
       #loading {
@@ -182,7 +182,7 @@
         }
       }
 
-      /* ============================================================
+  /* ============================================================
    NAV BAR
    ============================================================ */
       #nav-bar {
@@ -271,7 +271,7 @@
         display: none;
       }
 
-      /* ============================================================
+  /* ============================================================
    MAIN STAGE
    ============================================================ */
       #stage-wrap {
@@ -338,7 +338,7 @@
         opacity: 0;
       }
 
-      /* ============================================================
+  /* ============================================================
    ARROW BUTTONS
    ============================================================ */
       .arrow-btn {
@@ -432,7 +432,7 @@
         }
       }
 
-      /* ============================================================
+   /* ============================================================
    ERROR STATE
    ============================================================ */
       #error-msg {
@@ -449,7 +449,7 @@
         display: block;
       }
 
-      /* ============================================================
+  /* ============================================================
    PORTRAIT ADJUSTMENTS
    ============================================================ */
       @media (orientation: portrait) {
@@ -477,7 +477,7 @@
         }
       }
 
-      /* ============================================================
+   /* ============================================================
    SMALL PORTRAIT (phone)
    ============================================================ */
       @media (orientation: portrait) and (max-width: 480px) {
@@ -496,7 +496,7 @@
         }
       }
 
-      /* ============================================================
+   /* ============================================================
    LARGE LANDSCAPE (desktop)
    ============================================================ */
       @media (orientation: landscape) and (min-width: 1200px) {
@@ -509,7 +509,8 @@
     </style>
   </head>
   <body>
-    <!-- ============================================================
+    <!-- 
+    ============================================================
      LOADING
      ============================================================ -->
     <div id="loading">
@@ -542,7 +543,8 @@
       ></div>
     </div>
 
-    <!-- ============================================================
+    <!-- 
+    ============================================================
      APP
      ============================================================ -->
     <div id="app">
@@ -588,14 +590,14 @@
     </div>
 
     <script>
-      /* ============================================================
+  /* ============================================================
    MonoVerse — v2
    Legacy-first: ES5, XHR, no dependencies
    ============================================================ */
       (function () {
         'use strict';
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      CONFIG
   ---------------------------------------------------------- */
         var API_BASE = 'https://bible.helloao.org/api';
@@ -606,7 +608,7 @@
         var FONT_MIN = 13;
         var FONT_MAX = 96;
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      STATE
   ---------------------------------------------------------- */
         var books = []; // [{id, name, chapters:[{number, apiLink}]}]
@@ -618,7 +620,7 @@
         var idleTimer = null;
         var resizeTimer = null;
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      DOM
   ---------------------------------------------------------- */
         var elLoading = document.getElementById('loading');
@@ -633,7 +635,7 @@
         var selChapter = document.getElementById('sel-chapter');
         var selVerse = document.getElementById('sel-verse');
 
-        /* ----------------------------------------------------------
+ /* ----------------------------------------------------------
      XHR HELPER
   ---------------------------------------------------------- */
         function xhr(url, onSuccess, onError) {
@@ -691,7 +693,7 @@
           }
         }
 
-        /* ----------------------------------------------------------
+ /* ----------------------------------------------------------
      ERROR DISPLAY
   ---------------------------------------------------------- */
         function showError(msg) {
@@ -705,7 +707,7 @@
           elError.textContent = '';
         }
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      EXTRACT VERSE TEXT FROM HELLOAO CONTENT ARRAY
      Each verse content item is either a string or an object:
      {text, poem, noteId, lineBreak, ...}
@@ -728,7 +730,7 @@
           return out.replace(/\s+/g, ' ').trim();
         }
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      LOAD BOOKS LIST
   ---------------------------------------------------------- */
         function loadBooks(callback) {
@@ -741,21 +743,21 @@
               for (var b = 0; b < rawBooks.length; b++) {
                 var rb = rawBooks[b];
                 var chapterList = [];
-                /* API gives us firstChapterNumber and lastChapterNumber —
+
+          /* API gives us firstChapterNumber and lastChapterNumber —
            build the chapter list from that range */
                 var first = rb.firstChapterNumber || 1;
                 var last = rb.lastChapterNumber || rb.numberOfChapters || 1;
                 for (var n = first; n <= last; n++) {
                   chapterList.push({
                     number: n,
-                    apiLink:
-                      '/api/' + TRANSLATION + '/' + rb.id + '/' + n + '.json',
+                    apiLink: '/api/' + TRANSLATION + '/' + rb.id + '/' + n + '.json'
                   });
                 }
                 books.push({
                   id: rb.id,
                   name: rb.name || rb.commonName,
-                  chapters: chapterList,
+                  chapters: chapterList
                 });
               }
               booksLoaded = true;
@@ -763,11 +765,11 @@
             },
             function (err) {
               callback(err);
-            },
+            }
           );
         }
 
-        /* ----------------------------------------------------------
+ /* ----------------------------------------------------------
      LOAD CHAPTER (with cache)
   ---------------------------------------------------------- */
         function loadChapter(bookIdx, chapterIdx, callback) {
@@ -793,16 +795,16 @@
                 window._mvDebugLogged = true;
                 console.log(
                   '[MonoVerse] Chapter API response shape:',
-                  JSON.stringify(Object.keys(data)),
+                  JSON.stringify(Object.keys(data))
                 );
                 if (data.chapter)
                   console.log(
                     '[MonoVerse] data.chapter keys:',
-                    JSON.stringify(Object.keys(data.chapter)),
+                    JSON.stringify(Object.keys(data.chapter))
                   );
               }
 
-              /* The chapter content lives at data.chapter.content
+         /* The chapter content lives at data.chapter.content
          Each item can be: heading, verse, line break, etc.
          We only care about items with type === "verse" */
               var rawContent = [];
@@ -821,7 +823,7 @@
                   if (text) {
                     verses.push({
                       number: item.number || verses.length + 1,
-                      text: text,
+                      text: text
                     });
                   }
                 }
@@ -830,7 +832,7 @@
               if (verses.length === 0) {
                 console.warn(
                   '[MonoVerse] No verses parsed from chapter. Raw data:',
-                  data,
+                  data
                 );
               }
 
@@ -839,11 +841,11 @@
             },
             function (err) {
               callback(err, null);
-            },
+            }
           );
         }
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      POPULATE DROPDOWNS
   ---------------------------------------------------------- */
         function populateBooks() {
@@ -877,7 +879,7 @@
           }
         }
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      BINARY SEARCH FONT SIZE
      Finds the largest font size (px) where text fits the stage.
   ---------------------------------------------------------- */
@@ -911,7 +913,7 @@
           elVerse.style.fontSize = best + 'px';
         }
 
-        /* ----------------------------------------------------------
+ /* ----------------------------------------------------------
      RENDER VERSE
   ---------------------------------------------------------- */
         function renderVerse(text, animate) {
@@ -933,7 +935,7 @@
           }
         }
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      NAVIGATE TO A VERSE
   ---------------------------------------------------------- */
         function goToVerse(bookIdx, chapterIdx, verseIdx, animate) {
@@ -977,7 +979,7 @@
             var isFirst = bookIdx === 0 && chapterIdx === 0 && verseIdx === 0;
             var lastBook = books.length - 1;
             var lastChap = books[lastBook].chapters.length - 1;
-            /* We can't know the last verse count of the last chapter without loading it,
+        /* We can't know the last verse count of the last chapter without loading it,
          so we disable next only when we know we're at the end */
             elBtnPrev.disabled = isFirst;
             elBtnNext.disabled = false; /* will disable naturally at true end */
@@ -987,7 +989,7 @@
               bookIdx: bookIdx,
               chapterIdx: chapterIdx,
               verseIdx: verseIdx,
-              verses: verses,
+              verses: verses
             };
 
             resetIdle();
@@ -997,7 +999,7 @@
         /* Current position object */
         var currentPos = null;
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      SEQUENTIAL NAVIGATION
   ---------------------------------------------------------- */
         function stepVerse(delta) {
@@ -1058,7 +1060,7 @@
           goToVerse(newBook, newChapter, newVerse, true);
         }
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      IDLE MANAGEMENT
   ---------------------------------------------------------- */
         function resetIdle() {
@@ -1069,7 +1071,7 @@
           }, 2800);
         }
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      SWIPE
   ---------------------------------------------------------- */
         var touchStartX = 0;
@@ -1082,7 +1084,7 @@
             touchStartY = e.changedTouches[0].screenY;
             resetIdle();
           },
-          false,
+          false
         );
 
         elStageWrap.addEventListener(
@@ -1095,12 +1097,12 @@
               else stepVerse(-1);
             }
           },
-          false,
+          false
         );
 
         elStageWrap.addEventListener('mousemove', resetIdle, false);
 
-        /* ----------------------------------------------------------
+ /* ----------------------------------------------------------
      KEYBOARD
   ---------------------------------------------------------- */
         document.addEventListener(
@@ -1110,10 +1112,10 @@
             if (k === 37) stepVerse(-1);
             if (k === 39) stepVerse(1);
           },
-          false,
+          false
         );
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      BUTTON EVENTS
   ---------------------------------------------------------- */
         elBtnPrev.onclick = function () {
@@ -1123,7 +1125,7 @@
           stepVerse(1);
         };
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      DROPDOWN EVENTS
   ---------------------------------------------------------- */
         selBook.onchange = function () {
@@ -1144,7 +1146,7 @@
           goToVerse(bookIdx, chapterIdx, verseIdx, true);
         };
 
-        /* ----------------------------------------------------------
+  /* ----------------------------------------------------------
      RESIZE — refit text
   ---------------------------------------------------------- */
         window.onresize = function () {
@@ -1156,7 +1158,7 @@
           }, 150);
         };
 
-        /* ----------------------------------------------------------
+ /* ----------------------------------------------------------
      INIT
   ---------------------------------------------------------- */
         function hideLoading() {
