@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test 5g</title>
+<style>
+body { background: #F5EFE0; font-family: Georgia, serif; padding: 40px; }
+</style>
+</head>
+<body>
+<h1>Test 5g &mdash; done flag + finish() pattern</h1>
+<p>Tests the exact wrapper pattern used in the failing tests.</p>
+<div id="out"></div>
+<script>
+var outputEl = document.getElementById('out');
+function addResult(msg) {
+  var d = document.createElement('div');
+  d.textContent = msg;
+  outputEl.appendChild(d);
+}
+
+addResult('Script started.');
+
+var done = false;
+var req  = new XMLHttpRequest();
+
+var timer = setTimeout(function() {
+  if (done) return;
+  done = true;
+  req.abort();
+  addResult('Timed out.');
+}, 12000);
+
+function finish(err, data) {
+  if (done) return;
+  done = true;
+  clearTimeout(timer);
+  if (err) {
+    addResult('Error: ' + err);
+  } else {
+    addResult('Success. Keys: ' + Object.keys(data).join(', '));
+    var rawBooks = data.books || [];
+    addResult('Books: ' + rawBooks.length);
+  }
+}
+
+req.onload = function() {
+  if (req.status >= 200 && req.status < 300) {
+    try {
+      finish(null, JSON.parse(req.responseText));
+    } catch(e) {
+      finish('JSON parse error: ' + e);
+    }
+  } else {
+    finish('HTTP error: ' + req.status);
+  }
+};
+
+req.onreadystatechange = function() {
+  if (req.readyState !== 4 || done) return;
+  req.onload();
+};
+
+req.onerror  = function() { finish('Network error.'); };
+req.onabort  = function() { addResult('Aborted.'); };
+
+req.open('GET', 'https://bible.helloao.org/api/BSB/books.json', true);
+req.send();
+addResult('send() called.');
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test 5h</title>
+<style>
+body { background: #F5EFE0; font-family: Georgia, serif; padding: 40px; }
+</style>
+</head>
+<body>
+<h1>Test 5h &mdash; XHR inside a named wrapper function</h1>
+<p>XHR triggered by calling a function, with a callback. Same pattern as the app's xhrGet().</p>
+<div id="out"></div>
+<script>
+var outputEl = document.getElementById('out');
+function addResult(msg) {
+  var d = document.createElement('div');
+  d.textContent = msg;
+  outputEl.appendChild(d);
+}
+
+addResult('Script started.');
+
+function xhrGet(url, onSuccess, onError) {
+  var done = false;
+  var req  = new XMLHttpRequest();
+
+  var timer = setTimeout(function() {
+    if (done) return;
+    done = true;
+    req.abort();
+    onError('Timed out.');
+  }, 12000);
+
+  function finish(err, data) {
+    if (done) return;
+    done = true;
+    clearTimeout(timer);
+    if (err) { onError(err); } else { onSuccess(data); }
+  }
+
+  req.onload = function() {
+    if (req.status >= 200 && req.status < 300) {
+      try { finish(null, JSON.parse(req.responseText)); }
+      catch(e) { finish('parse error: ' + e); }
+    } else {
+      finish('HTTP ' + req.status);
+    }
+  };
+
+  req.onreadystatechange = function() {
+    if (req.readyState !== 4 || done) return;
+    req.onload();
+  };
+
+  req.onerror = function() { finish('onerror'); };
+  req.open('GET', url, true);
+  req.send();
+}
+
+addResult('Calling xhrGet...');
+
+xhrGet(
+  'https://bible.helloao.org/api/BSB/books.json',
+  function(data) {
+    addResult('Success callback fired.');
+    addResult('Books: ' + (data.books ? data.books.length : 'none'));
+  },
+  function(err) {
+    addResult('Error callback fired: ' + err);
+  }
+);
+
+addResult('xhrGet called.');
+</script>
+</body>
+</html>
