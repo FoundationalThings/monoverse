@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MonoVerse Test 7 — Full Init Sequence</title>
+    <style>
+      body {
+        background: #f5efe0;
+        color: #1a2b3c;
+        font-family: Georgia, serif;
+        margin: 0;
+        padding: 40px;
+      }
+      h1 {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+      p {
+        font-size: 13px;
+        color: #5c7a93;
+        margin-bottom: 24px;
+      }
+      .box {
+        margin-top: 10px;
+        padding: 12px;
+        font-size: 13px;
+        border-radius: 2px;
+      }
+      .pass {
+        background: #d4edda;
+        color: #155724;
+      }
+      .fail {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+      .info {
+        background: #e8f0f7;
+        color: #1a2b3c;
+        font-size: 12px;
+        word-break: break-all;
+      }
+      #verse-display {
+        margin-top: 32px;
+        padding: 32px;
+        background: #fff;
+        border: 1px solid #d8cebc;
+        font-style: italic;
+        font-size: 22px;
+        line-height: 1.8;
+        text-align: center;
+        color: #1a2b3c;
+        min-height: 80px;
+      }
+      #sel-row {
+        margin-top: 20px;
+      }
+      select {
+        font-family: Georgia, serif;
+        font-size: 14px;
+        margin-right: 8px;
+        padding: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test 7 &mdash; Full Init Sequence</h1>
+    <p>
+      Runs the complete app startup: load books, populate dropdowns, fetch
+      Genesis 1:1, render it.
+    </p>
+    <div id="out"></div>
+    <div id="sel-row">
+      <select id="sel-book"></select>
+      <select id="sel-chapter"></select>
+      <select id="sel-verse"></select>
+    </div>
+    <div id="verse-display">Waiting...</div>
+    <script>
+      var out = document.getElementById('out');
+      var selBook = document.getElementById('sel-book');
+      var selChapter = document.getElementById('sel-chapter');
+      var selVerse = document.getElementById('sel-verse');
+      var verseDisplay = document.getElementById('verse-display');
+
+      function log(msg, cls) {
+        var d = document.createElement('div');
+        d.className = 'box ' + (cls || 'info');
+        d.textContent = msg;
+        out.appendChild(d);
+        return d;
+      }
+
+      function xhrGet(url, onSuccess, onError) {
+        var done = false;
+        var req = new XMLHttpRequest();
+        var timer = setTimeout(function () {
+          if (done) return;
+          done = true;
+          req.abort();
+          onError('Timed out.');
+        }, 12000);
+        function finish(err, data) {
+          if (done) return;
+          done = true;
+          clearTimeout(timer);
+          if (err) {
+            onError(err);
+          } else {
+            onSuccess(data);
+          }
+        }
+        req.onload = function () {
+          if (req.status >= 200 && req.status < 300) {
+            try {
+              finish(null, JSON.parse(req.responseText));
+            } catch (e) {
+              finish('JSON parse error: ' + e);
+            }
+          } else {
+            finish('HTTP ' + req.status);
+          }
+        };
+        req.onreadystatechange = function () {
+          if (req.readyState !== 4 || done) return;
+          req.onload();
+        };
+        req.onerror = function () {
+          finish('Network error.');
+        };
+        try {
+          req.open('GET', url, true);
+          req.send();
+        } catch (e) {
+          finish('send() threw: ' + e);
+        }
+      }
+
+      function extractVerseText(contentArr) {
+        var result = '';
+        for (var i = 0; i < contentArr.length; i++) {
+          var item = contentArr[i];
+          if (typeof item === 'string') {
+            result += ' ' + item;
+          } else if (item && typeof item === 'object') {
+            if (item.lineBreak) {
+              result += ' ';
+            } else if (item.text) {
+              result += ' ' + item.text;
+            }
+          }
+        }
+        return result.replace(/\s+/g, ' ').trim();
+      }
+
+      /* STEP 1: Load books */
+      var step1 = log('Step 1: Fetching books.json...', 'pending');
+      var books = [];
+
+      xhrGet(
+        'https://bible.helloao.org/api/BSB/books.json',
+        function (data) {
+          step1.className = 'box pass';
+          step1.textContent = 'Step 1: books.json OK';
+
+          var rawBooks = data.books || [];
+          log(
+            'Raw books count: ' + rawBooks.length,
+            rawBooks.length > 0 ? 'pass' : 'fail',
+          );
+
+          /* Build books */
+          try {
+            for (var b = 0; b < rawBooks.length; b++) {
+              var rb = rawBooks[b];
+              var chapters = [];
+              var first = rb.firstChapterNumber || 1;
+              var last = rb.lastChapterNumber || rb.numberOfChapters || 1;
+              for (var n = first; n <= last; n++) {
+                chapters.push({ number: n });
+              }
+              books.push({
+                id: rb.id,
+                name: rb.name || rb.commonName,
+                chapters: chapters,
+              });
+            }
+            log(
+              'Books parsed: ' + books.length,
+              books.length === 66 ? 'pass' : 'fail',
+            );
+          } catch (e) {
+            log('Books parse error: ' + e, 'fail');
+            return;
+          }
+
+          /* STEP 2: Populate book dropdown */
+          try {
+            selBook.innerHTML = '';
+            for (var i = 0; i < books.length; i++) {
+              var opt = document.createElement('option');
+              opt.value = i;
+              opt.text = books[i].name;
+              selBook.appendChild(opt);
+            }
+            log(
+              'Step 2: Book dropdown populated (' +
+                selBook.options.length +
+                ' options)',
+              'pass',
+            );
+          } catch (e) {
+            log('Step 2 failed: ' + e, 'fail');
+            return;
+          }
+
+          /* STEP 3: Populate chapter dropdown for book 0 */
+          try {
+            selChapter.innerHTML = '';
+            var chs = books[0].chapters;
+            for (var j = 0; j < chs.length; j++) {
+              var opt2 = document.createElement('option');
+              opt2.value = j;
+              opt2.text = chs[j].number;
+              selChapter.appendChild(opt2);
+            }
+            log(
+              'Step 3: Chapter dropdown populated (' +
+                selChapter.options.length +
+                ' options)',
+              'pass',
+            );
+          } catch (e) {
+            log('Step 3 failed: ' + e, 'fail');
+            return;
+          }
+
+          /* STEP 4: Fetch Genesis 1 */
+          var step4 = log('Step 4: Fetching GEN/1.json...', 'pending');
+          var chapterUrl =
+            'https://bible.helloao.org/api/BSB/' + books[0].id + '/1.json';
+          log('Chapter URL: ' + chapterUrl, 'info');
+
+          xhrGet(
+            chapterUrl,
+            function (cdata) {
+              step4.className = 'box pass';
+              step4.textContent = 'Step 4: Chapter fetched OK';
+
+              /* STEP 5: Extract verses */
+              var rawContent = [];
+              if (cdata.chapter && Array.isArray(cdata.chapter.content)) {
+                rawContent = cdata.chapter.content;
+              } else if (Array.isArray(cdata.content)) {
+                rawContent = cdata.content;
+              }
+              log(
+                'Step 5: Raw content items: ' + rawContent.length,
+                rawContent.length > 0 ? 'pass' : 'fail',
+              );
+
+              var verses = [];
+              try {
+                for (var k = 0; k < rawContent.length; k++) {
+                  var ci = rawContent[k];
+                  if (!ci) continue;
+                  if (ci.type === 'verse' && ci.content) {
+                    var text = extractVerseText(ci.content);
+                    if (text)
+                      verses.push({
+                        number: ci.number || verses.length + 1,
+                        text: text,
+                      });
+                  }
+                }
+                log(
+                  'Step 5: Verses extracted: ' + verses.length,
+                  verses.length > 0 ? 'pass' : 'fail',
+                );
+              } catch (e) {
+                log('Step 5 extract error: ' + e, 'fail');
+                return;
+              }
+
+              /* STEP 6: Populate verse dropdown */
+              try {
+                selVerse.innerHTML = '';
+                for (var v = 0; v < verses.length; v++) {
+                  var vopt = document.createElement('option');
+                  vopt.value = v;
+                  vopt.text = verses[v].number;
+                  selVerse.appendChild(vopt);
+                }
+                log(
+                  'Step 6: Verse dropdown populated (' +
+                    selVerse.options.length +
+                    ' options)',
+                  'pass',
+                );
+              } catch (e) {
+                log('Step 6 failed: ' + e, 'fail');
+                return;
+              }
+
+              /* STEP 7: Render Genesis 1:1 */
+              try {
+                verseDisplay.textContent = verses[0]
+                  ? verses[0].text
+                  : '(no text)';
+                log('Step 7: Verse rendered to DOM', 'pass');
+                log('Text: ' + (verses[0] ? verses[0].text : 'empty'), 'info');
+              } catch (e) {
+                log('Step 7 failed: ' + e, 'fail');
+              }
+
+              log('=== Test 7 complete ===', 'pass');
+            },
+            function (err) {
+              step4.className = 'box fail';
+              step4.textContent = 'Step 4 failed: ' + err;
+            },
+          );
+        },
+        function (err) {
+          step1.className = 'box fail';
+          step1.textContent = 'Step 1 failed: ' + err;
+        },
+      );
+    </script>
+  </body>
+</html>

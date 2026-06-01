@@ -1,37 +1,219 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MonoVerse — Debug Tests</title>
-<style>
-body { background: #F5EFE0; color: #1A2B3C; font-family: Georgia, serif; margin: 0; padding: 40px; }
-h1 { font-size: 20px; font-style: italic; margin-bottom: 6px; }
-p  { font-size: 13px; color: #5C7A93; margin-bottom: 32px; }
-ul { list-style: none; padding: 0; }
-li { margin-bottom: 12px; }
-a  {
-  display: block;
-  padding: 14px 20px;
-  background: white;
-  border: 1px solid #D8CEBC;
-  color: #1A2B3C;
-  text-decoration: none;
-  font-size: 14px;
-}
-a:hover { background: #EDE5CE; }
-.num { color: #A8BCC9; margin-right: 8px; }
-.desc { display: block; font-size: 12px; color: #5C7A93; margin-top: 4px; }
-</style>
-</head>
-<body>
-<h1>MonoVerse — Debug Tests</h1>
-<p>Run these in order on the iPad. Each one adds a layer. Find where it breaks.</p>
-<ul>
-  <li><a href="test1.html"><span class="num">1.</span> HTML &amp; CSS only<span class="desc">No JavaScript at all. Should always pass.</span></a></li>
-  <li><a href="test2.html"><span class="num">2.</span> Basic JavaScript<span class="desc">var, setTimeout, JSON.parse, DOM manipulation.</span></a></li>
-  <li><a href="test3.html"><span class="num">3.</span> XHR — Genesis 1 chapter<span class="desc">Live request to the HelloAO API. Shows exact response structure.</span></a></li>
-  <li><a href="test4.html"><span class="num">4.</span> XHR — Books list<span class="desc">The first thing the real app fetches. Shows the books.json structure.</span></a></li>
-</ul>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MonoVerse — Debug Tests</title>
+    <style>
+      body {
+        background: #f5efe0;
+        color: #1a2b3c;
+        font-family: Georgia, serif;
+        margin: 0;
+        padding: 40px;
+      }
+      h1 {
+        font-size: 20px;
+        font-style: italic;
+        margin-bottom: 6px;
+      }
+      p {
+        font-size: 13px;
+        color: #5c7a93;
+        margin-bottom: 32px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        margin-bottom: 12px;
+      }
+      a {
+        display: block;
+        padding: 14px 20px;
+        background: white;
+        border: 1px solid #d8cebc;
+        color: #1a2b3c;
+        text-decoration: none;
+        font-size: 14px;
+      }
+      a:hover {
+        background: #ede5ce;
+      }
+      .num {
+        color: #a8bcc9;
+        margin-right: 8px;
+      }
+      .desc {
+        display: block;
+        font-size: 12px;
+        color: #5c7a93;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>MonoVerse — Debug Tests</h1>
+    <p>
+      Run these in order on the iPad. Each one adds a layer. Find where it
+      breaks.
+    </p>
+    <ul>
+      <li>
+        <a href="test1.html"
+          ><span class="num">1.</span> HTML &amp; CSS only<span class="desc"
+            >No JavaScript at all. Should always pass.</span
+          ></a
+        >
+      </li>
+      <li>
+        <a href="test2.html"
+          ><span class="num">2.</span> Basic JavaScript<span class="desc"
+            >var, setTimeout, JSON.parse, DOM manipulation.</span
+          ></a
+        >
+      </li>
+      <li>
+        <a href="test3.html"
+          ><span class="num">3.</span> XHR — Genesis 1 chapter<span class="desc"
+            >Live request to the HelloAO API. Shows exact response
+            structure.</span
+          ></a
+        >
+      </li>
+      <li>
+        <a href="test4.html"
+          ><span class="num">4.</span> XHR — Books list<span class="desc"
+            >The first thing the real app fetches. Shows the books.json
+            structure.</span
+          ></a
+        >
+      </li>
+
+      bash cat > /mnt/user-data/outputs/tests/index.html << 'EOF'
+      <!doctype html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
+          <title>MonoVerse &mdash; Debug Tests</title>
+          <style>
+            body {
+              background: #f5efe0;
+              color: #1a2b3c;
+              font-family: Georgia, serif;
+              margin: 0;
+              padding: 40px;
+            }
+            h1 {
+              font-size: 20px;
+              font-style: italic;
+              margin-bottom: 6px;
+            }
+            p {
+              font-size: 13px;
+              color: #5c7a93;
+              margin-bottom: 32px;
+            }
+            ul {
+              list-style: none;
+              padding: 0;
+            }
+            li {
+              margin-bottom: 12px;
+            }
+            a {
+              display: block;
+              padding: 14px 20px;
+              background: white;
+              border: 1px solid #d8cebc;
+              color: #1a2b3c;
+              text-decoration: none;
+              font-size: 14px;
+            }
+            a:hover {
+              background: #ede5ce;
+            }
+            .num {
+              color: #a8bcc9;
+              margin-right: 8px;
+            }
+            .desc {
+              display: block;
+              font-size: 12px;
+              color: #5c7a93;
+              margin-top: 4px;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>MonoVerse &mdash; Debug Tests</h1>
+          <p>Run in order. Each adds one layer. Find where it breaks.</p>
+          <ul>
+            <li>
+              <a href="test1.html"
+                ><span class="num">1.</span> HTML &amp; CSS only<span
+                  class="desc"
+                  >No JavaScript. Should always pass.</span
+                ></a
+              >
+            </li>
+            <li>
+              <a href="test2.html"
+                ><span class="num">2.</span> Basic JavaScript<span class="desc"
+                  >var, setTimeout, JSON.parse, DOM manipulation.</span
+                ></a
+              >
+            </li>
+            <li>
+              <a href="test3.html"
+                ><span class="num">3.</span> XHR &mdash; Genesis 1 chapter<span
+                  class="desc"
+                  >Live request to HelloAO. Shows raw response structure.</span
+                ></a
+              >
+            </li>
+            <li>
+              <a href="test4.html"
+                ><span class="num">4.</span> XHR &mdash; Books list<span
+                  class="desc"
+                  >The first thing the real app fetches. Shows books.json
+                  structure.</span
+                ></a
+              >
+            </li>
+            <li>
+              <a href="test5.html"
+                ><span class="num">5.</span> Parse books.json<span class="desc"
+                  >Runs the app's exact book/chapter list building logic.</span
+                ></a
+              >
+            </li>
+            <li>
+              <a href="test6.html"
+                ><span class="num">6.</span> Parse chapter &amp; extract
+                verses<span class="desc"
+                  >Runs the app's exact verse extraction logic. Shows first 3
+                  verses.</span
+                ></a
+              >
+            </li>
+            <li>
+              <a href="test7.html"
+                ><span class="num">7.</span> Full init sequence<span
+                  class="desc"
+                  >Books + chapter + dropdowns + render verse to DOM. The whole
+                  startup in one page.</span
+                ></a
+              >
+            </li>
+          </ul>
+        </body>
+      </html>
+    </ul>
+  </body>
 </html>
