@@ -55,16 +55,17 @@
     </p>
     <div id="out"></div>
     <script>
-      var out = document.getElementById('out');
-      function log(msg, cls) {
+      var outputEl = document.getElementById('out');
+      outputEl.innerHTML = '<div class="box pass">Script started.</div>';
+      function addResult(msg, cls) {
         var d = document.createElement('div');
         d.className = 'box ' + (cls || 'info');
         d.textContent = msg;
-        out.appendChild(d);
+        outputEl.appendChild(d);
         return d;
       }
 
-      var pending = log('Fetching books.json...', 'pending');
+      var pending = addResult('Fetching books.json...', 'pending');
       var done = false;
       var req = new XMLHttpRequest();
 
@@ -86,9 +87,9 @@
         var data;
         try {
           data = JSON.parse(req.responseText);
-          log('JSON parsed OK', 'pass');
+          addResult('JSON parsed OK', 'pass');
         } catch (e) {
-          log('JSON parse failed: ' + e, 'fail');
+          addResult('JSON parse failed: ' + e, 'fail');
           return;
         }
 
@@ -96,7 +97,7 @@
         var books = [];
         var rawBooks = data.books || [];
 
-        log(
+        addResult(
           'rawBooks.length: ' + rawBooks.length,
           rawBooks.length > 0 ? 'pass' : 'fail',
         );
@@ -104,15 +105,27 @@
         /* Check first book's keys */
         if (rawBooks.length > 0) {
           var first = rawBooks[0];
-          log('First book keys: ' + Object.keys(first).join(', '), 'info');
-          log('first.id: ' + first.id, first.id ? 'pass' : 'fail');
-          log(
+          addResult(
+            'First book keys: ' + Object.keys(first).join(', '),
+            'info',
+          );
+          addResult('first.id: ' + first.id, first.id ? 'pass' : 'fail');
+          addResult(
             'first.name or commonName: ' + (first.name || first.commonName),
             first.name || first.commonName ? 'pass' : 'fail',
           );
-          log('first.firstChapterNumber: ' + first.firstChapterNumber, 'info');
-          log('first.lastChapterNumber: ' + first.lastChapterNumber, 'info');
-          log('first.numberOfChapters: ' + first.numberOfChapters, 'info');
+          addResult(
+            'first.firstChapterNumber: ' + first.firstChapterNumber,
+            'info',
+          );
+          addResult(
+            'first.lastChapterNumber: ' + first.lastChapterNumber,
+            'info',
+          );
+          addResult(
+            'first.numberOfChapters: ' + first.numberOfChapters,
+            'info',
+          );
         }
 
         /* Build books array */
@@ -134,31 +147,31 @@
               chapters: chapterList,
             });
           }
-          log(
+          addResult(
             'books array built. Length: ' + books.length,
             books.length === 66 ? 'pass' : 'fail',
           );
         } catch (e) {
-          log('Error building books array: ' + e, 'fail');
+          addResult('Error building books array: ' + e, 'fail');
           return;
         }
 
         /* Spot check a few */
         if (books[0]) {
-          log(
+          addResult(
             'books[0]: ' +
               books[0].name +
               ', chapters: ' +
               books[0].chapters.length,
             'pass',
           );
-          log(
+          addResult(
             'books[0] first chapter apiLink: ' + books[0].chapters[0].apiLink,
             'info',
           );
         }
         if (books[18]) {
-          log(
+          addResult(
             'books[18]: ' +
               books[18].name +
               ', chapters: ' +
@@ -167,7 +180,7 @@
           );
         }
         if (books[65]) {
-          log(
+          addResult(
             'books[65]: ' +
               books[65].name +
               ', chapters: ' +
@@ -176,7 +189,7 @@
           );
         }
 
-        log('— Test 5 complete —', 'pass');
+        addResult('— Test 5 complete —', 'pass');
       };
 
       req.onreadystatechange = function () {

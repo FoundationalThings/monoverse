@@ -63,12 +63,13 @@
     </p>
     <div id="out"></div>
     <script>
-      var out = document.getElementById('out');
-      function log(msg, cls) {
+      var outputEl = document.getElementById('out');
+      outputEl.innerHTML = '<div class="box pass">Script started.</div>';
+      function addResult(msg, cls) {
         var d = document.createElement('div');
         d.className = 'box ' + (cls || 'info');
         d.textContent = msg;
-        out.appendChild(d);
+        outputEl.appendChild(d);
         return d;
       }
 
@@ -89,7 +90,7 @@
         return result.replace(/\s+/g, ' ').trim();
       }
 
-      var pending = log('Fetching GEN/1.json...', 'pending');
+      var pending = addResult('Fetching GEN/1.json...', 'pending');
       var done = false;
       var req = new XMLHttpRequest();
 
@@ -111,37 +112,37 @@
         var data;
         try {
           data = JSON.parse(req.responseText);
-          log('JSON parsed OK', 'pass');
+          addResult('JSON parsed OK', 'pass');
         } catch (e) {
-          log('JSON parse failed: ' + e, 'fail');
+          addResult('JSON parse failed: ' + e, 'fail');
           return;
         }
 
-        log('Top-level keys: ' + Object.keys(data).join(', '), 'info');
+        addResult('Top-level keys: ' + Object.keys(data).join(', '), 'info');
 
         var rawContent = [];
         if (data.chapter && Array.isArray(data.chapter.content)) {
           rawContent = data.chapter.content;
-          log(
+          addResult(
             'data.chapter.content found. Length: ' + rawContent.length,
             'pass',
           );
         } else if (Array.isArray(data.content)) {
           rawContent = data.content;
-          log(
+          addResult(
             'data.content found (fallback). Length: ' + rawContent.length,
             'pass',
           );
         } else {
-          log('No content array found.', 'fail');
-          log('data keys: ' + JSON.stringify(Object.keys(data)), 'info');
+          addResult('No content array found.', 'fail');
+          addResult('data keys: ' + JSON.stringify(Object.keys(data)), 'info');
           return;
         }
 
-        log('Item 0: ' + JSON.stringify(rawContent[0]), 'info');
-        log('Item 1: ' + JSON.stringify(rawContent[1]), 'info');
-        log('Item 2: ' + JSON.stringify(rawContent[2]), 'info');
-        log('Item 3: ' + JSON.stringify(rawContent[3]), 'info');
+        addResult('Item 0: ' + JSON.stringify(rawContent[0]), 'info');
+        addResult('Item 1: ' + JSON.stringify(rawContent[1]), 'info');
+        addResult('Item 2: ' + JSON.stringify(rawContent[2]), 'info');
+        addResult('Item 3: ' + JSON.stringify(rawContent[3]), 'info');
 
         var verses = [];
         try {
@@ -158,26 +159,26 @@
               }
             }
           }
-          log(
+          addResult(
             'Verses extracted: ' + verses.length,
             verses.length > 0 ? 'pass' : 'fail',
           );
         } catch (e) {
-          log('Error during verse extraction: ' + e, 'fail');
+          addResult('Error during verse extraction: ' + e, 'fail');
           return;
         }
 
         if (verses[0]) {
-          log('v1: ' + verses[0].text, 'verse');
+          addResult('v1: ' + verses[0].text, 'verse');
         }
         if (verses[1]) {
-          log('v2: ' + verses[1].text, 'verse');
+          addResult('v2: ' + verses[1].text, 'verse');
         }
         if (verses[2]) {
-          log('v3: ' + verses[2].text, 'verse');
+          addResult('v3: ' + verses[2].text, 'verse');
         }
 
-        log('Test 6 complete', 'pass');
+        addResult('Test 6 complete', 'pass');
       };
 
       req.onreadystatechange = function () {

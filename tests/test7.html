@@ -82,17 +82,18 @@
     </div>
     <div id="verse-display">Waiting...</div>
     <script>
-      var out = document.getElementById('out');
+      var outputEl = document.getElementById('out');
+      outputEl.innerHTML = '<div class="box pass">Script started.</div>';
       var selBook = document.getElementById('sel-book');
       var selChapter = document.getElementById('sel-chapter');
       var selVerse = document.getElementById('sel-verse');
       var verseDisplay = document.getElementById('verse-display');
 
-      function log(msg, cls) {
+      function addResult(msg, cls) {
         var d = document.createElement('div');
         d.className = 'box ' + (cls || 'info');
         d.textContent = msg;
-        out.appendChild(d);
+        outputEl.appendChild(d);
         return d;
       }
 
@@ -159,7 +160,7 @@
       }
 
       /* STEP 1: Load books */
-      var step1 = log('Step 1: Fetching books.json...', 'pending');
+      var step1 = addResult('Step 1: Fetching books.json...', 'pending');
       var books = [];
 
       xhrGet(
@@ -169,7 +170,7 @@
           step1.textContent = 'Step 1: books.json OK';
 
           var rawBooks = data.books || [];
-          log(
+          addResult(
             'Raw books count: ' + rawBooks.length,
             rawBooks.length > 0 ? 'pass' : 'fail',
           );
@@ -190,12 +191,12 @@
                 chapters: chapters,
               });
             }
-            log(
+            addResult(
               'Books parsed: ' + books.length,
               books.length === 66 ? 'pass' : 'fail',
             );
           } catch (e) {
-            log('Books parse error: ' + e, 'fail');
+            addResult('Books parse error: ' + e, 'fail');
             return;
           }
 
@@ -208,14 +209,14 @@
               opt.text = books[i].name;
               selBook.appendChild(opt);
             }
-            log(
+            addResult(
               'Step 2: Book dropdown populated (' +
                 selBook.options.length +
                 ' options)',
               'pass',
             );
           } catch (e) {
-            log('Step 2 failed: ' + e, 'fail');
+            addResult('Step 2 failed: ' + e, 'fail');
             return;
           }
 
@@ -229,22 +230,22 @@
               opt2.text = chs[j].number;
               selChapter.appendChild(opt2);
             }
-            log(
+            addResult(
               'Step 3: Chapter dropdown populated (' +
                 selChapter.options.length +
                 ' options)',
               'pass',
             );
           } catch (e) {
-            log('Step 3 failed: ' + e, 'fail');
+            addResult('Step 3 failed: ' + e, 'fail');
             return;
           }
 
           /* STEP 4: Fetch Genesis 1 */
-          var step4 = log('Step 4: Fetching GEN/1.json...', 'pending');
+          var step4 = addResult('Step 4: Fetching GEN/1.json...', 'pending');
           var chapterUrl =
             'https://bible.helloao.org/api/BSB/' + books[0].id + '/1.json';
-          log('Chapter URL: ' + chapterUrl, 'info');
+          addResult('Chapter URL: ' + chapterUrl, 'info');
 
           xhrGet(
             chapterUrl,
@@ -259,7 +260,7 @@
               } else if (Array.isArray(cdata.content)) {
                 rawContent = cdata.content;
               }
-              log(
+              addResult(
                 'Step 5: Raw content items: ' + rawContent.length,
                 rawContent.length > 0 ? 'pass' : 'fail',
               );
@@ -278,12 +279,12 @@
                       });
                   }
                 }
-                log(
+                addResult(
                   'Step 5: Verses extracted: ' + verses.length,
                   verses.length > 0 ? 'pass' : 'fail',
                 );
               } catch (e) {
-                log('Step 5 extract error: ' + e, 'fail');
+                addResult('Step 5 extract error: ' + e, 'fail');
                 return;
               }
 
@@ -296,14 +297,14 @@
                   vopt.text = verses[v].number;
                   selVerse.appendChild(vopt);
                 }
-                log(
+                addResult(
                   'Step 6: Verse dropdown populated (' +
                     selVerse.options.length +
                     ' options)',
                   'pass',
                 );
               } catch (e) {
-                log('Step 6 failed: ' + e, 'fail');
+                addResult('Step 6 failed: ' + e, 'fail');
                 return;
               }
 
@@ -312,13 +313,16 @@
                 verseDisplay.textContent = verses[0]
                   ? verses[0].text
                   : '(no text)';
-                log('Step 7: Verse rendered to DOM', 'pass');
-                log('Text: ' + (verses[0] ? verses[0].text : 'empty'), 'info');
+                addResult('Step 7: Verse rendered to DOM', 'pass');
+                addResult(
+                  'Text: ' + (verses[0] ? verses[0].text : 'empty'),
+                  'info',
+                );
               } catch (e) {
-                log('Step 7 failed: ' + e, 'fail');
+                addResult('Step 7 failed: ' + e, 'fail');
               }
 
-              log('=== Test 7 complete ===', 'pass');
+              addResult('=== Test 7 complete ===', 'pass');
             },
             function (err) {
               step4.className = 'box fail';
