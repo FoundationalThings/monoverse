@@ -124,6 +124,7 @@
 
       .loading-wordmark {
         font-family: var(--font-serif);
+        font-size: 22px;
         font-size: clamp(22px, 4vw, 36px);
         font-style: italic;
         letter-spacing: 0.12em;
@@ -212,9 +213,9 @@
         position: absolute;
         left: 16px;
         font-style: italic;
-        font-size: 13px;
+        font-size: 22px;
         letter-spacing: 0.1em;
-        color: var(--ink-ghost);
+        color: var(--ink-mid);
         -webkit-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
@@ -362,6 +363,7 @@
         -webkit-justify-content: center;
         justify-content: center;
         color: var(--ink-ghost);
+        font-size: 50px;
         font-size: clamp(20px, 3vw, 32px);
         -webkit-tap-highlight-color: transparent;
         -webkit-transition:
@@ -883,11 +885,11 @@
      BINARY SEARCH FONT SIZE
      Finds the largest font size (px) where text fits the stage.
   ---------------------------------------------------------- */
-        function fitTextToStage() {
+        function fitTextToStage() {          
           var stageW = elStage.clientWidth - 2; /* fudge for sub-px */
           var stageH = elStage.clientHeight - 2;
 
-          /* Padding is already applied via CSS, so we measure
+       /* Padding is already applied via CSS, so we measure
        the inner available area via the stage itself */
 
           var lo = FONT_MIN;
@@ -899,10 +901,7 @@
             var mid = Math.floor((lo + hi) / 2);
             elVerse.style.fontSize = mid + 'px';
 
-            if (
-              elVerse.scrollWidth <= stageW &&
-              elVerse.scrollHeight <= stageH
-            ) {
+            if (elVerse.scrollHeight <= stageH) {
               best = mid;
               lo = mid + 1;
             } else {
