@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MonoVerse Test 2 — Basic JS</title>
+<style>
+body { background: #F5EFE0; color: #1A2B3C; font-family: Georgia, serif; margin: 0; padding: 40px; }
+h1 { font-size: 18px; margin-bottom: 16px; }
+.box { margin-top: 16px; padding: 12px; font-size: 14px; }
+.pass { background: #d4edda; color: #155724; }
+.fail { background: #f8d7da; color: #721c24; }
+</style>
+</head>
+<body>
+<h1>Test 2 — Basic JavaScript</h1>
+<div id="out"></div>
+<script>
+var out = document.getElementById('out');
+
+function log(msg, pass) {
+  var d = document.createElement('div');
+  d.className = 'box ' + (pass ? 'pass' : 'fail');
+  d.textContent = (pass ? '✓ ' : '✗ ') + msg;
+  out.appendChild(d);
+}
+
+/* Test 1: var and function */
+try {
+  var x = 1 + 1;
+  log('var and arithmetic: ' + x, x === 2);
+} catch(e) { log('var and arithmetic failed: ' + e, false); }
+
+/* Test 2: getElementById */
+try {
+  var el = document.getElementById('out');
+  log('getElementById works', !!el);
+} catch(e) { log('getElementById failed: ' + e, false); }
+
+/* Test 3: createElement and appendChild */
+try {
+  var d = document.createElement('div');
+  d.textContent = 'created';
+  log('createElement and textContent work', true);
+} catch(e) { log('createElement failed: ' + e, false); }
+
+/* Test 4: setTimeout */
+try {
+  setTimeout(function() {
+    log('setTimeout fired', true);
+  }, 100);
+} catch(e) { log('setTimeout failed: ' + e, false); }
+
+/* Test 5: JSON.parse */
+try {
+  var obj = JSON.parse('{"test":true}');
+  log('JSON.parse works', obj.test === true);
+} catch(e) { log('JSON.parse failed: ' + e, false); }
+
+/* Test 6: Array operations */
+try {
+  var arr = [1,2,3];
+  log('Array length: ' + arr.length, arr.length === 3);
+} catch(e) { log('Array failed: ' + e, false); }
+</script>
+</body>
+</html>
