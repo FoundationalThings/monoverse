@@ -66,7 +66,7 @@
       body {
         height: 100%;
         width: 100%;
-        overflow: hidden;
+        /* overflow: hidden; */
         background: var(--cream);
         color: var(--ink);
         font-family: var(--font-serif);
@@ -96,7 +96,10 @@
    ============================================================ */
       #loading {
         position: fixed;
-        inset: 0;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         background: var(--cream);
         display: -webkit-box;
         display: -webkit-flex;
@@ -124,7 +127,7 @@
 
       .loading-wordmark {
         font-family: var(--font-serif);
-        font-size: 22px;
+        font-size: 28px;
         font-size: clamp(22px, 4vw, 36px);
         font-style: italic;
         letter-spacing: 0.12em;
@@ -197,9 +200,10 @@
         -webkit-box-align: center;
         -webkit-align-items: center;
         align-items: center;
-        -webkit-box-pack: center;
-        -webkit-justify-content: center;
-        justify-content: center;
+        -webkit-box-pack: end;
+        -webkit-justify-content: flex-end;
+        -ms-flex-pack: end;
+        justify-content: flex-end;
         padding: 0 20px;
         border-bottom: 1px solid var(--rule);
         background: var(--cream);
@@ -208,9 +212,22 @@
         gap: 2px;
       }
 
+      .nav-div {
+        color: var(--rule);
+        font-size: 16px;
+        padding: 0 6px;
+        -webkit-user-select: none;
+          -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
+      }
+
       /* Wordmark — left side */
       .nav-wordmark {
         position: absolute;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+                transform: translateY(-50%);
         left: 16px;
         font-style: italic;
         font-size: 22px;
@@ -244,6 +261,15 @@
         user-select: none;
       }
 
+      .version-group {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display:         flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+                align-items: center;
+      }
+
       select {
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -252,7 +278,7 @@
         border: none;
         outline: none;
         font-family: var(--font-serif);
-        font-size: 13px;
+        font-size: 20px;
         letter-spacing: 0.05em;
         color: var(--ink-mid);
         cursor: pointer;
@@ -290,7 +316,8 @@
         -webkit-justify-content: center;
         justify-content: center;
         position: relative;
-        overflow: hidden;
+        /* overflow: hidden; */
+        /* padding-bottom: 120px; */
       }
 
       /* The constrained content box */
@@ -314,9 +341,12 @@
       #stage::before {
         content: '';
         position: absolute;
-        inset: 0;
-        border: 1px solid var(--rule);
-        border-radius: 2px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* border: 1px solid var(--rule); */
+        /* border-radius: 2px; */
         pointer-events: none;
         opacity: 0.6;
       }
@@ -343,96 +373,48 @@
    ARROW BUTTONS
    ============================================================ */
       .arrow-btn {
-        position: absolute;
-        top: 50%;
-        -webkit-transform: translateY(-50%);
-        -ms-transform: translateY(-50%);
-        transform: translateY(-50%);
-        width: var(--arrow-zone);
-        height: 100%;
-        background: none;
-        border: none;
+        position: fixed;
+        bottom: 0;
+        width: 18vw;
+        height: 22vw;
+        max-width: 120px;
+        max-height: 120px;
+        /* line-height: 22vw; */
+        text-align: center;
+        background: var(--cream);
+        /* border: 0px solid var(--rule); */
+        /* border-bottom: none; */
         cursor: pointer;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: flex;
-        -webkit-box-align: center;
-        -webkit-align-items: center;
-        align-items: center;
-        -webkit-box-pack: center;
-        -webkit-justify-content: center;
-        justify-content: center;
-        color: var(--ink-ghost);
-        font-size: 50px;
-        font-size: clamp(20px, 3vw, 32px);
+        color: var(--ink-soft);
+        font-size: 56px;
+        font-size: clamp(24px, 5vw, 48px);
         -webkit-tap-highlight-color: transparent;
-        -webkit-transition:
-          color 0.2s var(--ease),
-          opacity 0.3s var(--ease);
-        transition:
-          color 0.2s var(--ease),
-          opacity 0.3s var(--ease);
-        opacity: 1;
         -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        z-index: 5;
+          -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
+        z-index: 20;
+        -webkit-transition: background 0.15s, color 0.15s;
+                transition: background 0.15s, color 0.15s;
       }
 
-      .arrow-btn:hover {
-        color: var(--ink-soft);
-      }
-      .arrow-btn:active {
-        color: var(--ink);
-      }
-      .arrow-btn:focus {
-        outline: none;
-      }
+      /* .arrow-btn:hover  { background: var(--cream-dark); color: var(--ink); } */
+
+      
+      .arrow-btn:focus  { outline: none; }
 
       .arrow-btn:disabled {
-        opacity: 0.15;
+        /* opacity: 0.25;
         cursor: default;
+        pointer-events: none; */
+        visibility: hidden;
       }
 
-      #btn-prev {
-        left: 0;
-      }
-      #btn-next {
-        right: 0;
-      }
+      /* #btn-prev { left: 0;  border-right: 1px solid var(--rule); border-radius: 0 8px 0 0; }
+      #btn-next { right: 0; border-left:  1px solid var(--rule); border-radius: 8px 0 0 0; } */
 
-      .arrow-inner {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: flex;
-        -webkit-box-align: center;
-        -webkit-align-items: center;
-        align-items: center;
-        -webkit-box-pack: center;
-        -webkit-justify-content: center;
-        justify-content: center;
-        -webkit-transition: background 0.15s;
-        transition: background 0.15s;
-      }
-
-      .arrow-btn:hover .arrow-inner {
-        background: var(--cream-deep);
-      }
-
-      /* Idle fade — modern pointer devices only */
-      @media (hover: hover) and (pointer: fine) {
-        #stage-wrap.idle .arrow-btn:not(:disabled) {
-          opacity: 0.12;
-        }
-        #stage-wrap:hover .arrow-btn:not(:disabled),
-        #stage-wrap.active .arrow-btn:not(:disabled) {
-          opacity: 1;
-        }
-      }
+      #btn-prev { left: 0; border: none; }
+      #btn-next { right: 0; border: none; }
 
    /* ============================================================
    ERROR STATE
@@ -459,24 +441,7 @@
           --stage-w: 88vw;
           --stage-h: 62vh;
           --arrow-zone: 7vw;
-        }
-
-        .arrow-btn {
-          top: auto;
-          bottom: 0;
-          -webkit-transform: none;
-          -ms-transform: none;
-          transform: none;
-          width: 56px;
-          height: 64px;
-        }
-
-        #btn-prev {
-          left: 20px;
-        }
-        #btn-next {
-          right: 20px;
-        }
+        }        
       }
 
    /* ============================================================
@@ -490,13 +455,22 @@
         }
 
         select {
-          font-size: 12px;
+          font-size: 20px;
           max-width: 130px;
         }
         .nav-wordmark {
           display: none;
         }
+
+        #nav-bar {
+          -webkit-box-pack: center;
+          -webkit-justify-content: center;
+                  justify-content: center;
+        }
+
       }
+
+
 
    /* ============================================================
    LARGE LANDSCAPE (desktop)
@@ -508,47 +482,27 @@
           --pad-stage: 64px;
         }
       }
+
+
+      @media (hover: hover) {
+        .arrow-btn:hover { color: var(--ink); }
+      }
+
     </style>
   </head>
   <body>
-    <!-- 
-    ============================================================
-     LOADING
-     ============================================================ -->
+
     <div id="loading">
       <div class="loading-wordmark">MonoVerse</div>
-      <div
-        style="
-          display: -webkit-box;
-          display: -webkit-flex;
-          display: flex;
-          gap: 6px;
-          margin-top: 4px;
-        "
-      >
+      <div style="display:-webkit-box;display:-webkit-flex;display:flex;gap:6px;margin-top:4px;">
         <span class="loading-dot"></span>
         <span class="loading-dot"></span>
         <span class="loading-dot"></span>
       </div>
       <div class="loading-sub" id="loading-sub">Opening the Word</div>
-      <div
-        id="loading-error"
-        style="
-          display: none;
-          font-size: 12px;
-          color: #8b3a3a;
-          margin-top: 16px;
-          text-align: center;
-          padding: 0 32px;
-          font-style: italic;
-        "
-      ></div>
+      <div id="loading-error" style="display:none;font-size:12px;color:#8b3a3a;margin-top:16px;text-align:center;padding:0 32px;font-style:italic;"></div>
     </div>
 
-    <!-- 
-    ============================================================
-     APP
-     ============================================================ -->
     <div id="app">
       <!-- Nav -->
       <div id="nav-bar">
@@ -559,6 +513,12 @@
           <select id="sel-chapter" aria-label="Chapter"></select>
           <span class="ref-sep">&#xb7;</span>
           <select id="sel-verse" aria-label="Verse"></select>
+          <span class="ref-sep">&#xb7;</span>
+          <div class="version-group">
+            <select id="sel-version" aria-label="Bible Version" title="Berean Standard Bible">
+              <option value="BSB">BSB</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -567,31 +527,17 @@
 
       <!-- Stage -->
       <div id="stage-wrap">
-        <button
-          id="btn-prev"
-          class="arrow-btn"
-          aria-label="Previous verse"
-          disabled
-        >
-          <span class="arrow-inner">&#8249;</span>
-        </button>
-
         <div id="stage">
           <p id="verse-text" lang="en"></p>
         </div>
-
-        <button
-          id="btn-next"
-          class="arrow-btn"
-          aria-label="Next verse"
-          disabled
-        >
-          <span class="arrow-inner">&#8250;</span>
-        </button>
       </div>
     </div>
 
-    <script>
+    <!-- Arrows outside app, direct children of body -->
+    <button id="btn-prev" class="arrow-btn" aria-label="Previous verse">&#8249;</button>
+    <button id="btn-next" class="arrow-btn" aria-label="Next verse">&#8250;</button>
+
+  <script>
   /* ============================================================
    MonoVerse — v2
    Legacy-first: ES5, XHR, no dependencies
@@ -981,7 +927,12 @@
         /* We can't know the last verse count of the last chapter without loading it,
          so we disable next only when we know we're at the end */
             elBtnPrev.disabled = isFirst;
-            elBtnNext.disabled = false; /* will disable naturally at true end */
+            //elBtnNext.disabled = false; /* will disable naturally at true end */
+
+            var isLast = (bookIdx === books.length - 1) && 
+             (chapterIdx === books[bookIdx].chapters.length - 1) && 
+             (verseIdx === verses.length - 1);
+            elBtnNext.disabled = isLast;
 
             /* Persist position */
             currentPos = {
@@ -1117,6 +1068,24 @@
   /* ----------------------------------------------------------
      BUTTON EVENTS
   ---------------------------------------------------------- */
+
+        function addTouchFeedback(btn) {
+          btn.addEventListener('touchstart', function() {
+            btn.style.color = 'var(--ink)';
+          }, false);
+          btn.addEventListener('touchend', function() {
+            setTimeout(function() {
+              btn.style.color = '';
+            }, 150);
+          }, false);
+          btn.addEventListener('touchcancel', function() {
+            btn.style.color = '';
+          }, false);
+        }
+
+        addTouchFeedback(elBtnPrev);
+        addTouchFeedback(elBtnNext);
+
         elBtnPrev.onclick = function () {
           stepVerse(-1);
         };
