@@ -53,3 +53,37 @@ Using Prettier in VS Code was actually introducing/re-introducing problems becau
 Don't use these tools for this kind of project work.
 
 Beware of anything that could alter your code to the wrong standard.
+
+
+### LESSON 2: Using SVG sprite sheet
+<sup>Monday, June 8, 2026</sup>
+((This tip needs a HOW-TO of its own!))
+
+__**Style Rule to Adopt**__
+> Anywhere you use SVG features, add the `xlink` namespace and take a dual attribute approach with referencing the SVG symbols in the `use` element. This gives you the legacy safety net automatically.
+
+__**Details**__
+Using an SVG sprite sheet at the top of the `body`'s code is a great way to make the code readable, while still being able to use CSS on the SVGs on your page. BUT... it needs some legacy support.
+
+**DO THIS:**
+```
+        <svg aria-hidden="true" focusable="false">
+                <use href="#kofi_icon_svg" xlink:href="#kofi_icon_svg" />
+        </svg>
+```
+
+**NOT THIS:**
+```
+        <svg aria-hidden="true" focusable="false">
+                <use href="#kofi_icon_svg" xlink:href="#kofi_icon_svg" />
+        </svg>
+```
+
+The `<use href="#...">` is the problem with legacy browser. The `href` attribute on `<use>` isn't supported on older browsers and older WebKit (which is what iPad 3 runs). They need `xlink:href` instead.
+
+For maximum compatibility, **include both** as we show here. Modern browsers use `href`, legacy browsers fall back to `xlink:href`. Both pointing to the same `symbol` ID so nothing changes visually.
+
+You'll also need the `xlink` namespace declared on your sprite sheet's opening `svg` tag, for good measure:
+```
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none">
+```
