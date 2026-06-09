@@ -87,3 +87,39 @@ You'll also need the `xlink` namespace declared on your sprite sheet's opening `
 ```
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none">
 ```
+
+###Lesson 3: CSS `gap` needs a workaround  (IN PROGRESS)
+<sup>Monday, June 8, 2026</sup>
+
+`gap:` on grid and flexbox containers isn't supported in the older WebKit on iPad 3.
+
+The reliable legacy fallback is `margin:` on the **child** elements instead.
+
+####For grid layouts:
+```
+.projects,
+.available {
+  display: grid;
+  gap: 20px; /* modern browsers */
+  margin-top: 4px;
+}
+
+.project-card,
+.available-card {
+  margin-bottom: 20px; /* legacy fallback */
+}
+```
+
+####For flex layouts:
+```
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* modern browsers */
+}
+
+.badges > * {
+  margin-right: 8px; /* legacy fallback */
+  margin-bottom: 8px;
+}
+```
